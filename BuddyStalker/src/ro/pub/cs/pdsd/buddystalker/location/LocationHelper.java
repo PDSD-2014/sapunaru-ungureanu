@@ -1,4 +1,4 @@
-package ro.pub.cs.pdsd.buddystalker;
+package ro.pub.cs.pdsd.buddystalker.location;
 
 import android.content.Context;
 import android.location.Location;

@@ -1,5 +1,7 @@
-package ro.pub.cs.pdsd.buddystalker;
+package ro.pub.cs.pdsd.buddystalker.ui;
 
+import ro.pub.cs.pdsd.buddystalker.R;
+import ro.pub.cs.pdsd.buddystalker.location.LocationHelper;
 import android.app.Activity;
 import android.location.Location;
 import android.os.Bundle;
@@ -63,9 +65,9 @@ public class MapActivity extends Activity {
 		if (mGoogleMap != null) {
 			Location location = null;
 			CameraPosition cameraPosition = null;
-
+			
 			if (!mLocationHelper.isLocationServiceEnabled()) {
-				Toast.makeText(this, "Location service is disabled", Toast.LENGTH_LONG).show();
+				Toast.makeText(this, "", Toast.LENGTH_LONG).show();
 				cameraPosition = new CameraPosition.Builder()
 						.target(new LatLng(25, 25))
 						.zoom(1)

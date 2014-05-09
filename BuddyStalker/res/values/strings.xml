@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Buddy Stalker</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="toast_location_disabled">Location service is disabled</string>
     <string name="action_settings">Settings</string>
 
 </resources>
