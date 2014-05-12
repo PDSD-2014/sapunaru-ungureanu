@@ -21,9 +21,9 @@ public class GetUsersAsyncTask extends AsyncTask<Integer, Integer, List<User>> {
 			throw new RuntimeException(e);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
+		} finally {
+			client.close();
 		}
-
-		client.close();
 
 		return users;
 	}

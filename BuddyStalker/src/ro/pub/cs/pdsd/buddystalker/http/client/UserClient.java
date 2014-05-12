@@ -1,7 +1,7 @@
 package ro.pub.cs.pdsd.buddystalker.http.client;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
@@ -16,6 +16,8 @@ import android.net.http.AndroidHttpClient;
 import android.os.Build;
 import android.util.Base64;
 import android.util.Log;
+
+import com.google.gson.Gson;
 
 public class UserClient {
 	private static final String USER_AGENT = "Android " + Build.VERSION.RELEASE;
@@ -34,7 +36,10 @@ public class UserClient {
 		String responseBody = EntityUtils.toString(response.getEntity());
 		Log.d("UserClient", responseBody);
 
-		return new ArrayList<User>();
+		Gson gson = new Gson();
+		User[] users = gson.fromJson(responseBody, User[].class);
+
+		return Arrays.asList(users);
 	}
 
 	public void close() {

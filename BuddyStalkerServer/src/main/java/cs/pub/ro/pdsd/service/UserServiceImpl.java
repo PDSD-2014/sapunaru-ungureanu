@@ -10,6 +10,14 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<User> getUsers() {
 		// TODO: actual implementation
-		return new ArrayList<User>();
+		User dummy = new User();
+		dummy.setId(1L);
+		dummy.setName("Buddy");
+		dummy.setLatitude(44.4325f);
+		dummy.setLongitude(26.1039f);
+		List<User> users = new ArrayList<User>();
+		users.add(dummy);
+
+		return users;
 	}
 }

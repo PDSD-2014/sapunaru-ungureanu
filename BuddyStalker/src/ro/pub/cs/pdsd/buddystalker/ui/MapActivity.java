@@ -1,8 +1,11 @@
 package ro.pub.cs.pdsd.buddystalker.ui;
 
+import java.util.List;
+
 import ro.pub.cs.pdsd.buddystalker.R;
 import ro.pub.cs.pdsd.buddystalker.http.client.GetUsersAsyncTask;
 import ro.pub.cs.pdsd.buddystalker.location.LocationHelper;
+import ro.pub.cs.pdsd.buddystalker.model.User;
 import android.app.Activity;
 import android.location.Location;
 import android.os.Bundle;
@@ -15,6 +18,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapActivity extends Activity {
 	private static final float DEFAULT_ZOOM_FOR_LOCATION = 13.0f;
@@ -30,7 +34,16 @@ public class MapActivity extends Activity {
 		mLocationHelper = new LocationHelper(this);
 		setUpMapIfNeeded();
 
-		new GetUsersAsyncTask().execute(new Integer[] {});
+		new GetUsersAsyncTask() {
+			@Override
+			protected void onPostExecute(List<User> users) {
+				if (users != null) {
+					for (User user : users) {
+						addUserMarker(user);
+					}
+				}
+			}
+		}.execute();
 	}
 
 	@Override
@@ -88,5 +101,13 @@ public class MapActivity extends Activity {
 				}
 			}
 		}
+	}
+
+	private void addUserMarker(User user) {
+		MarkerOptions markerOptions = new MarkerOptions();
+		markerOptions.position(new LatLng(user.getLatitude(), user.getLongitude()));
+		markerOptions.title(user.getName());
+
+		mGoogleMap.addMarker(markerOptions);
 	}
 }

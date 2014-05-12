@@ -6,11 +6,6 @@ public class User {
 	private float latitude;
 	private float longitude;
 
-	public User(long id, String name) {
-		this.id = id;
-		this.name = name;
-	}
-
 	public long getId() {
 		return id;
 	}
