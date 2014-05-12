@@ -1,6 +1,7 @@
 package ro.pub.cs.pdsd.buddystalker.ui;
 
 import ro.pub.cs.pdsd.buddystalker.R;
+import ro.pub.cs.pdsd.buddystalker.http.client.GetUsersAsyncTask;
 import ro.pub.cs.pdsd.buddystalker.location.LocationHelper;
 import android.app.Activity;
 import android.location.Location;
@@ -28,6 +29,8 @@ public class MapActivity extends Activity {
 
 		mLocationHelper = new LocationHelper(this);
 		setUpMapIfNeeded();
+
+		new GetUsersAsyncTask().execute(new Integer[] {});
 	}
 
 	@Override
@@ -65,7 +68,7 @@ public class MapActivity extends Activity {
 		if (mGoogleMap != null) {
 			Location location = null;
 			CameraPosition cameraPosition = null;
-			
+
 			if (!mLocationHelper.isLocationServiceEnabled()) {
 				Toast.makeText(this, "", Toast.LENGTH_LONG).show();
 				cameraPosition = new CameraPosition.Builder()

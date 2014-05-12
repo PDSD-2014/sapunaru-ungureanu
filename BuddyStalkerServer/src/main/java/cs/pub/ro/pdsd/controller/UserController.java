@@ -2,6 +2,8 @@ package cs.pub.ro.pdsd.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,7 +20,7 @@ public class UserController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	public List<User> getUsers() {
+	public List<User> getUsers(HttpServletRequest request) {
 		return userService.getUsers();
 	}
 }
