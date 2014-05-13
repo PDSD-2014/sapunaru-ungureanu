@@ -1,4 +1,4 @@
-package cs.pub.ro.pdsd.server;
+package ro.pub.cs.pdsd.buddystalker.server.server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

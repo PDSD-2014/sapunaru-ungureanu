@@ -20,12 +20,22 @@ import android.util.Log;
 import com.google.gson.Gson;
 
 public class UserClient {
+	private static final UserClient INSTANCE = null;
+
 	private static final String USER_AGENT = "Android " + Build.VERSION.RELEASE;
 
 	private HttpClient httpClient;
 
-	public UserClient() {
+	private UserClient() {
 		httpClient = AndroidHttpClient.newInstance(USER_AGENT);
+	}
+
+	public static UserClient getInstance() {
+		if (INSTANCE == null) {
+			return new UserClient();
+		} else {
+			return INSTANCE;
+		}
 	}
 
 	public List<User> getUsers() throws ClientProtocolException, IOException {

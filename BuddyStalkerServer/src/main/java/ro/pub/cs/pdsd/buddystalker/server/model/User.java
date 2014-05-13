@@ -1,4 +1,4 @@
-package ro.pub.cs.pdsd.buddystalker.model;
+package ro.pub.cs.pdsd.buddystalker.server.model;
 
 public class User {
 	private long id;

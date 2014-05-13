@@ -1,4 +1,4 @@
-package cs.pub.ro.pdsd.controller;
+package ro.pub.cs.pdsd.buddystalker.server.controller;
 
 import java.util.List;
 
@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import cs.pub.ro.pdsd.model.User;
-import cs.pub.ro.pdsd.service.UserService;
-import cs.pub.ro.pdsd.service.UserServiceImpl;
+import ro.pub.cs.pdsd.buddystalker.server.model.User;
+import ro.pub.cs.pdsd.buddystalker.server.service.UserService;
+import ro.pub.cs.pdsd.buddystalker.server.service.UserServiceImpl;
 
 @Controller
 @RequestMapping(value = "/rest-api/users")

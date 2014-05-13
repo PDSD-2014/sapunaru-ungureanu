@@ -18,10 +18,14 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapActivity extends Activity {
 	private static final float DEFAULT_ZOOM_FOR_LOCATION = 13.0f;
+	private static final float DEFAULT_ZOOM_NO_LOCATION = 1.0f;
+
+	private static final LatLng DEFAULT_LAT_LNG = new LatLng(0.0f, 0.0f);
 
 	private GoogleMap mGoogleMap;
 	private LocationHelper mLocationHelper;
@@ -76,6 +80,8 @@ public class MapActivity extends Activity {
 		// do a null check to confirm that we have not already instantiated the map
 		if (mGoogleMap == null) {
 			mGoogleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+
+			//mGoogleMap.setInfoWindowAdapter(adapter);
 		}
 
 		if (mGoogleMap != null) {
@@ -83,10 +89,11 @@ public class MapActivity extends Activity {
 			CameraPosition cameraPosition = null;
 
 			if (!mLocationHelper.isLocationServiceEnabled()) {
-				Toast.makeText(this, "", Toast.LENGTH_LONG).show();
+				Toast.makeText(this, getString(R.string.toast_location_disabled),
+						Toast.LENGTH_LONG).show();
 				cameraPosition = new CameraPosition.Builder()
-						.target(new LatLng(25, 25))
-						.zoom(1)
+						.target(DEFAULT_LAT_LNG)
+						.zoom(DEFAULT_ZOOM_NO_LOCATION)
 						.build();
 			} else {
 				mGoogleMap.setMyLocationEnabled(true);
@@ -97,17 +104,19 @@ public class MapActivity extends Activity {
 							.target(new LatLng(location.getLatitude(), location.getLongitude()))
 							.zoom(DEFAULT_ZOOM_FOR_LOCATION)
 							.build();
-					mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 				}
 			}
+
+			mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 		}
 	}
 
-	private void addUserMarker(User user) {
+	private Marker addUserMarker(User user) {
 		MarkerOptions markerOptions = new MarkerOptions();
 		markerOptions.position(new LatLng(user.getLatitude(), user.getLongitude()));
-		markerOptions.title(user.getName());
+		markerOptions.title(user.getFirstName() + " " + user.getLastName());
+		markerOptions.snippet("Status: " + user.getStatus());
 
-		mGoogleMap.addMarker(markerOptions);
+		return mGoogleMap.addMarker(markerOptions);
 	}
 }

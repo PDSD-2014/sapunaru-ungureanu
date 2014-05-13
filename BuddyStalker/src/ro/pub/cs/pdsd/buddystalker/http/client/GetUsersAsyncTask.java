@@ -13,7 +13,7 @@ public class GetUsersAsyncTask extends AsyncTask<Integer, Integer, List<User>> {
 	@Override
 	protected List<User> doInBackground(Integer... params) {
 		List<User> users;
-		UserClient client = new UserClient();
+		UserClient client = UserClient.getInstance();
 
 		try {
 			users = client.getUsers();
