@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.util.EntityUtils;
 
@@ -40,7 +43,7 @@ public class UserClient {
 
 	public List<User> getUsers() throws ClientProtocolException, IOException {
 		HttpUriRequest request = new HttpGet(RestApiPaths.USERS_PATH);
-		addAuthorizationHeader(request);
+		//addAuthorizationHeader(request);
 		HttpResponse response = httpClient.execute(request);
 
 		String responseBody = EntityUtils.toString(response.getEntity());
@@ -52,12 +55,28 @@ public class UserClient {
 		return Arrays.asList(users);
 	}
 
+	public void login(String username, String password)
+			throws ClientProtocolException, IOException, HttpException {
+		HttpUriRequest request = new HttpPost(RestApiPaths.LOGIN_PATH);
+		addAuthorizationHeader(request, username, password);
+
+		HttpResponse response = httpClient.execute(request);
+		int statusCode = response.getStatusLine().getStatusCode();
+
+		Log.w("UserClient", "login response status is " + statusCode);
+
+		switch (statusCode) {
+		case HttpStatus.SC_UNAUTHORIZED:
+			throw new HttpException("Username and password combination is invalid");
+		}
+	}
+
 	public void close() {
 		((AndroidHttpClient) httpClient).close();
 	}
 
-	protected void addAuthorizationHeader(HttpUriRequest request) {
-		request.addHeader("Authorization", encodeCredentials("test", "test"));
+	protected void addAuthorizationHeader(HttpUriRequest request, String username, String password) {
+		request.addHeader("Authorization", encodeCredentials(username, password));
 	}
 
 	private String encodeCredentials(String username, String password) {

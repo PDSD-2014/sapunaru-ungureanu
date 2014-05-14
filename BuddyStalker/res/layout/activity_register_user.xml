@@ -1,0 +1,96 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp" >
+
+    <TextView
+        android:id="@+id/header_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp"
+        android:text="@string/register_header"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/username_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header_tv"
+        android:text="@string/username" />
+
+    <EditText
+        android:id="@+id/username_et"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/username_tv"
+        android:layout_below="@id/header_tv"
+        android:layout_toRightOf="@id/username_tv"
+        android:inputType="text"
+        android:maxLines="1"
+        android:singleLine="true" />
+
+    <TextView
+        android:id="@+id/password_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/username_et"
+        android:text="@string/password" />
+
+    <EditText
+        android:id="@+id/password_et"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/password_tv"
+        android:layout_below="@id/username_et"
+        android:layout_toRightOf="@id/password_tv"
+        android:inputType="textPassword"
+        android:maxLines="1"
+        android:singleLine="true" />
+
+    <TextView
+        android:id="@+id/first_name_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/password_et"
+        android:text="@string/first_name" />
+
+    <EditText
+        android:id="@+id/first_name_et"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/first_name_tv"
+        android:layout_below="@id/password_et"
+        android:layout_toRightOf="@id/first_name_tv"
+        android:inputType="text"
+        android:maxLines="1"
+        android:singleLine="true" />
+
+    <TextView
+        android:id="@+id/last_name_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/first_name_et"
+        android:text="@string/last_name" />
+
+    <EditText
+        android:id="@+id/last_name_et"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/last_name_tv"
+        android:layout_below="@id/first_name_et"
+        android:layout_toRightOf="@id/last_name_tv"
+        android:inputType="text"
+        android:maxLines="1"
+        android:singleLine="true" />
+
+    <Button
+        android:id="@+id/register_btn"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/last_name_et"
+        android:layout_marginTop="16dp"
+        android:text="@string/register" />
+
+</RelativeLayout>
