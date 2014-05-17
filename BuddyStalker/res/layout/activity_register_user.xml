@@ -92,5 +92,4 @@
         android:layout_below="@id/last_name_et"
         android:layout_marginTop="16dp"
         android:text="@string/register" />
-
 </RelativeLayout>

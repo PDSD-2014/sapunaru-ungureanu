@@ -3,6 +3,7 @@ package ro.pub.cs.pdsd.buddystalker.server.model;
 public class User {
 	private long id;
 	private String username;
+	private String password;
 	private String firstName;
 	private String lastName;
 	private float latitude;
@@ -23,6 +24,14 @@ public class User {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public String getFirstName() {

@@ -124,7 +124,7 @@ public class LoginActivity extends Activity {
 			cancel = true;
 		}
 
-		// check for a valid email address
+		// check for a valid user name
 		if (TextUtils.isEmpty(mUsername)) {
 			mUsernameView.setError(getString(R.string.error_field_required));
 			focusView = mUsernameView;
@@ -145,7 +145,7 @@ public class LoginActivity extends Activity {
 		}
 	}
 
-	public void goToRegisterUserActivity() {
+	private void goToRegisterUserActivity() {
 		Intent intent = new Intent(this, RegisterUserActivity.class);
 		startActivity(intent);
 	}
@@ -194,7 +194,7 @@ public class LoginActivity extends Activity {
 	 * Represents an asynchronous login/registration task used to authenticate
 	 * the user.
 	 */
-	public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+	private class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			UserClient userClient = UserClient.getInstance();
@@ -220,7 +220,9 @@ public class LoginActivity extends Activity {
 			showProgress(false);
 
 			if (success) {
-				finish();
+				// redirect to MapActivity
+				Intent intent = new Intent(LoginActivity.this, MapActivity.class);
+				startActivity(intent);
 			} else {
 				mUsernameView.setError(getString(R.string.error_incorrect_combination));
 				mUsernameView.requestFocus();

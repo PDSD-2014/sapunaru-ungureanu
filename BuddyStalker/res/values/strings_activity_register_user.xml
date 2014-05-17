@@ -2,10 +2,13 @@
 
     <!-- Strings related to login -->
     <string name="register_header">Enter your profile info:</string>
-    <string name="username">Username:</string>
-    <string name="password">Password:</string>
-    <string name="first_name">First name:</string>
-    <string name="last_name">Last name:</string>
+    <string name="username">Username*:</string>
+    <string name="password">Password*:</string>
+    <string name="first_name">First name*:</string>
+    <string name="last_name">Last name*:</string>
     <string name="register">Register</string>
+    <string name="initial_status">I\'m new to Buddy Stalker!</string>
 
+    <string name="create_failed_duplicate_username">Username already in use, please choose another</string>
+    <string name="create_failed_connection_problems">We\'re having problems communicating with the server</string>
 </resources>

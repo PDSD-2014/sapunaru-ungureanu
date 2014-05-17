@@ -1,17 +1,20 @@
 package ro.pub.cs.pdsd.buddystalker.http.client;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 
 import ro.pub.cs.pdsd.buddystalker.model.User;
@@ -25,9 +28,12 @@ import com.google.gson.Gson;
 public class UserClient {
 	private static final UserClient INSTANCE = null;
 
+	private static final String TAG = UserClient.class.getSimpleName();
 	private static final String USER_AGENT = "Android " + Build.VERSION.RELEASE;
 
 	private HttpClient httpClient;
+
+	private static final Gson GSON = new Gson();
 
 	private UserClient() {
 		httpClient = AndroidHttpClient.newInstance(USER_AGENT);
@@ -43,32 +49,38 @@ public class UserClient {
 
 	public List<User> getUsers() throws ClientProtocolException, IOException {
 		HttpUriRequest request = new HttpGet(RestApiPaths.USERS_PATH);
-		//addAuthorizationHeader(request);
 		HttpResponse response = httpClient.execute(request);
 
 		String responseBody = EntityUtils.toString(response.getEntity());
-		Log.d("UserClient", responseBody);
-
-		Gson gson = new Gson();
-		User[] users = gson.fromJson(responseBody, User[].class);
+		User[] users = GSON.fromJson(responseBody, User[].class);
 
 		return Arrays.asList(users);
 	}
 
-	public void login(String username, String password)
-			throws ClientProtocolException, IOException, HttpException {
-		HttpUriRequest request = new HttpPost(RestApiPaths.LOGIN_PATH);
-		addAuthorizationHeader(request, username, password);
+	public boolean createUser(User user) throws ClientProtocolException, UnsupportedEncodingException,
+			IOException {
+		HttpPost request = new HttpPost(RestApiPaths.USERS_PATH);
+		request.setEntity(new StringEntity(GSON.toJson(user)));
+		request.setHeader("Content-Type", "application/json");
 
 		HttpResponse response = httpClient.execute(request);
-		int statusCode = response.getStatusLine().getStatusCode();
 
-		Log.w("UserClient", "login response status is " + statusCode);
+		StatusLine statusLine = response.getStatusLine();
+		Log.d(TAG, "create user response status line: " + statusLine);
 
-		switch (statusCode) {
-		case HttpStatus.SC_UNAUTHORIZED:
-			throw new HttpException("Username and password combination is invalid");
-		}
+		return (statusLine.getStatusCode() == HttpStatus.SC_CREATED);
+	}
+
+	public boolean login(String username, String password)
+			throws ClientProtocolException, IOException, HttpException {
+		HttpUriRequest request = new HttpPost(RestApiPaths.LOGIN_PATH);
+
+		HttpResponse response = httpClient.execute(request);
+
+		StatusLine statusLine = response.getStatusLine();
+		Log.d(TAG, "login response status line: " + statusLine);
+
+		return (statusLine.getStatusCode() == HttpStatus.SC_OK);
 	}
 
 	public void close() {
@@ -81,6 +93,7 @@ public class UserClient {
 
 	private String encodeCredentials(String username, String password) {
 		String source = username + ":" + password;
-		return "Basic " + Base64.encodeToString(source.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
+		return "Basic "
+				+ Base64.encodeToString(source.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
 	}
 }

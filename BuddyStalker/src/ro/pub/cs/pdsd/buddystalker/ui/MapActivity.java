@@ -38,6 +38,8 @@ public class MapActivity extends Activity {
 		mLocationHelper = new LocationHelper(this);
 		setUpMapIfNeeded();
 
+		Toast.makeText(this, "Logged in as", Toast.LENGTH_SHORT).show();
+
 		new GetUsersAsyncTask() {
 			@Override
 			protected void onPostExecute(List<User> users) {
@@ -103,6 +105,11 @@ public class MapActivity extends Activity {
 					cameraPosition = new CameraPosition.Builder()
 							.target(new LatLng(location.getLatitude(), location.getLongitude()))
 							.zoom(DEFAULT_ZOOM_FOR_LOCATION)
+							.build();
+				} else {
+					cameraPosition = new CameraPosition.Builder()
+							.target(DEFAULT_LAT_LNG)
+							.zoom(DEFAULT_ZOOM_NO_LOCATION)
 							.build();
 				}
 			}
