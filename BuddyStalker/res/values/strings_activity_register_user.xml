@@ -8,6 +8,7 @@
     <string name="last_name">Last name*:</string>
     <string name="register">Register</string>
     <string name="initial_status">I\'m new to Buddy Stalker!</string>
+    <string name="progress_dialog_text">Creating your account, please wait...</string>
 
     <string name="create_failed_duplicate_username">Username already in use, please choose another</string>
     <string name="create_failed_connection_problems">We\'re having problems communicating with the server</string>

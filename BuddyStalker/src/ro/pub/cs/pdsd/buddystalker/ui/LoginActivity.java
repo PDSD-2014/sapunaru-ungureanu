@@ -7,6 +7,7 @@ import org.apache.http.client.ClientProtocolException;
 
 import ro.pub.cs.pdsd.buddystalker.R;
 import ro.pub.cs.pdsd.buddystalker.http.client.UserClient;
+import ro.pub.cs.pdsd.buddystalker.util.PasswordUtils;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -200,7 +201,8 @@ public class LoginActivity extends Activity {
 			UserClient userClient = UserClient.getInstance();
 
 			try {
-				userClient.login(mUsername, mPassword);
+				// send the hash of the password
+				userClient.login(mUsername, PasswordUtils.sha256Hash(mPassword));
 			} catch (ClientProtocolException e) {
 				return false;
 			} catch (IOException e) {

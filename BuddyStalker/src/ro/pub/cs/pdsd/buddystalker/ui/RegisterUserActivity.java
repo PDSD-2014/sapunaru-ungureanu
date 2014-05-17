@@ -8,6 +8,7 @@ import org.apache.http.client.ClientProtocolException;
 import ro.pub.cs.pdsd.buddystalker.R;
 import ro.pub.cs.pdsd.buddystalker.http.client.UserClient;
 import ro.pub.cs.pdsd.buddystalker.model.User;
+import ro.pub.cs.pdsd.buddystalker.util.PasswordUtils;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -114,7 +115,7 @@ public class RegisterUserActivity extends Activity {
 				}
 
 				progressDialog = ProgressDialog.show(RegisterUserActivity.this, null,
-						"Creating your account, please wait...");
+						getString(R.string.progress_dialog_text));
 				new RegisterUserTask().execute();
 			}
 		});
@@ -123,7 +124,7 @@ public class RegisterUserActivity extends Activity {
 	private User buildUser() {
 		User user = new User();
 		user.setUsername(usernameEt.getText().toString());
-		user.setPassword(passwordEt.getText().toString());
+		user.setPassword(PasswordUtils.sha256Hash(passwordEt.getText().toString()));
 		user.setFirstName(firstNameEt.getText().toString());
 		user.setLastName(lastNameEt.getText().toString());
 		user.setStatus(getString(R.string.initial_status));
