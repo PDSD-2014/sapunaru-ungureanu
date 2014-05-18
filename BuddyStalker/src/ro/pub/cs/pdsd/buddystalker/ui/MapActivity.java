@@ -1,9 +1,11 @@
 package ro.pub.cs.pdsd.buddystalker.ui;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ro.pub.cs.pdsd.buddystalker.R;
-import ro.pub.cs.pdsd.buddystalker.http.client.GetUsersAsyncTask;
+import ro.pub.cs.pdsd.buddystalker.http.client.GetUserAsyncTask;
+import ro.pub.cs.pdsd.buddystalker.http.client.UpdatesPollingAsyncTask;
 import ro.pub.cs.pdsd.buddystalker.location.LocationHelper;
 import ro.pub.cs.pdsd.buddystalker.model.User;
 import android.app.Activity;
@@ -27,8 +29,14 @@ public class MapActivity extends Activity {
 
 	private static final LatLng DEFAULT_LAT_LNG = new LatLng(0.0f, 0.0f);
 
+	private List<Marker> markerList = new ArrayList<Marker>();
+
 	private GoogleMap mGoogleMap;
 	private LocationHelper mLocationHelper;
+	private UpdatesPollingAsyncTask mUpdatesPollingTask;
+	private Thread updateThread;
+
+	private User currentUser;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,18 +46,37 @@ public class MapActivity extends Activity {
 		mLocationHelper = new LocationHelper(this);
 		setUpMapIfNeeded();
 
-		Toast.makeText(this, "Logged in as", Toast.LENGTH_SHORT).show();
+		String username = getIntent().getExtras().getString(ExtraParameters.USERNAME);
 
-		new GetUsersAsyncTask() {
+		new GetUserAsyncTask() {
 			@Override
-			protected void onPostExecute(List<User> users) {
-				if (users != null) {
-					for (User user : users) {
-						addUserMarker(user);
-					}
-				}
+			protected void onPostExecute(User user) {
+				currentUser = user;
+				Toast.makeText(MapActivity.this, "Logged in as " + currentUser.getUsername(),
+						Toast.LENGTH_SHORT).show();
+
+				updateThread = new UpdateLocationThread(currentUser.getId(), mLocationHelper);
+				updateThread.start();
 			}
-		}.execute();
+		}.execute(username);
+
+		mUpdatesPollingTask = new UpdatesPollingAsyncTask() {
+			@Override
+			public void onProgressUpdate(List<User>... users) {
+				addUserMarkers(users[0]);
+			}
+		};
+		mUpdatesPollingTask.execute();
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		mUpdatesPollingTask.cancel(true);
+		mUpdatesPollingTask = null;
+
+		updateThread.interrupt();
+		updateThread = null;
 	}
 
 	@Override
@@ -57,6 +84,29 @@ public class MapActivity extends Activity {
 		super.onResume();
 
 		setUpMapIfNeeded();
+
+		if (mUpdatesPollingTask == null) {
+			mUpdatesPollingTask = new UpdatesPollingAsyncTask() {
+				@Override
+				public void onProgressUpdate(List<User>... users) {
+					addUserMarkers(users[0]);
+				}
+			};
+			mUpdatesPollingTask.execute();
+		}
+
+		if (updateThread == null && currentUser != null) {
+			updateThread = new UpdateLocationThread(currentUser.getId(), mLocationHelper);
+			updateThread.start();
+		}
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+
+		mUpdatesPollingTask.cancel(true);
+		mUpdatesPollingTask = null;
 	}
 
 	@Override
@@ -118,12 +168,25 @@ public class MapActivity extends Activity {
 		}
 	}
 
-	private Marker addUserMarker(User user) {
-		MarkerOptions markerOptions = new MarkerOptions();
-		markerOptions.position(new LatLng(user.getLatitude(), user.getLongitude()));
-		markerOptions.title(user.getFirstName() + " " + user.getLastName());
-		markerOptions.snippet("Status: " + user.getStatus());
+	private void addUserMarkers(List<User> users) {
+		if (users != null) {
+			for (Marker marker : markerList) {
+				marker.remove();
+			}
 
-		return mGoogleMap.addMarker(markerOptions);
+			markerList.clear();
+
+			for (User user : users) {
+				if (user.getUsername().equals(currentUser.getUsername())) {
+					continue;
+				}
+				MarkerOptions markerOptions = new MarkerOptions();
+				markerOptions.position(new LatLng(user.getLatitude(), user.getLongitude()));
+				markerOptions.title(user.getFirstName() + " " + user.getLastName());
+				markerOptions.snippet("Status: " + user.getStatus());
+
+				markerList.add(mGoogleMap.addMarker(markerOptions));
+			}
+		}
 	}
 }

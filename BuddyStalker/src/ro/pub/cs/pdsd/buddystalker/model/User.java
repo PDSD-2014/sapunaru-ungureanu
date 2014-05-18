@@ -9,6 +9,7 @@ public class User {
 	private float latitude;
 	private float longitude;
 	private String status;
+	private boolean online;
 
 	public long getId() {
 		return id;
@@ -72,5 +73,18 @@ public class User {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public boolean isOnline() {
+		return online;
+	}
+
+	public void setOnline(boolean online) {
+		this.online = online;
+	}
+
+	@Override
+	public String toString() {
+		return "username: " + username + ", first name: " + firstName + ", last name: " + lastName;
 	}
 }

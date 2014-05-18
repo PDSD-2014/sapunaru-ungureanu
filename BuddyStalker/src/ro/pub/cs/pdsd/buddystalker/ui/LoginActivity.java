@@ -202,18 +202,14 @@ public class LoginActivity extends Activity {
 
 			try {
 				// send the hash of the password
-				userClient.login(mUsername, PasswordUtils.sha256Hash(mPassword));
+				return userClient.validateCredentials(mUsername, PasswordUtils.sha256Hash(mPassword));
 			} catch (ClientProtocolException e) {
 				return false;
 			} catch (IOException e) {
 				return false;
 			} catch (HttpException e) {
 				return false;
-			} finally {
-				userClient.close();
 			}
-
-			return true;
 		}
 
 		@Override
@@ -224,6 +220,7 @@ public class LoginActivity extends Activity {
 			if (success) {
 				// redirect to MapActivity
 				Intent intent = new Intent(LoginActivity.this, MapActivity.class);
+				intent.putExtra(ExtraParameters.USERNAME, mUsername);
 				startActivity(intent);
 			} else {
 				mUsernameView.setError(getString(R.string.error_incorrect_combination));

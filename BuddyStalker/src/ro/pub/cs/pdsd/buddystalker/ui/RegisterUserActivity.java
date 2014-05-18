@@ -168,15 +168,12 @@ public class RegisterUserActivity extends Activity {
 			progressDialog.dismiss();
 
 			if (successful) {
-				goToRegisterUserActivity();
+				Intent intent = new Intent(RegisterUserActivity.this, MapActivity.class);
+				intent.putExtra(ExtraParameters.USERNAME, usernameEt.getText().toString());
+				startActivity(intent);
 			} else {
 				Toast.makeText(RegisterUserActivity.this, failureMessage, Toast.LENGTH_LONG).show();
 			}
-		}
-
-		private void goToRegisterUserActivity() {
-			Intent intent = new Intent(RegisterUserActivity.this, MapActivity.class);
-			startActivity(intent);
 		}
 	}
 }
