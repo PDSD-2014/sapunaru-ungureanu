@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ro.pub.cs.pdsd.buddystalker.server.exception.BadRequestException;
+import ro.pub.cs.pdsd.buddystalker.server.exception.InvalidCredentialsException;
 import ro.pub.cs.pdsd.buddystalker.server.exception.UserNotFoundException;
 import ro.pub.cs.pdsd.buddystalker.server.exception.UsernameValidationException;
 import ro.pub.cs.pdsd.buddystalker.server.model.User;
@@ -22,12 +23,34 @@ import ro.pub.cs.pdsd.buddystalker.server.service.UserServiceImpl;
 @Controller
 @RequestMapping(value = "/rest-api/users")
 public class UserController {
-	private final UserService userService = new UserServiceImpl();
+	private final UserService userService = UserServiceImpl.getInstance();
+
+	@RequestMapping(value = "/validateCredentials", method = RequestMethod.POST)
+	public ResponseEntity<String> validateCredentials(@RequestParam("username") String username,
+			@RequestParam("secret") String password) {
+		if (!userService.validateCredentials(username, password)) {
+			throw new InvalidCredentialsException();
+		}
+
+		return new ResponseEntity<String>(HttpStatus.OK);
+	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	@ResponseBody
 	public User getUser(@PathVariable Long id) {
-		User user = userService.getUser(id);
+		User user = userService.retrieveUser(id);
+
+		if (user == null) {
+			throw new UserNotFoundException();
+		}
+
+		return user;
+	}
+
+	@RequestMapping(value = "/search", method = RequestMethod.GET)
+	@ResponseBody
+	public User getUserByUsername(@RequestParam("username") String username) {
+		User user = userService.retrieveUserByUsername(username);
 
 		if (user == null) {
 			throw new UserNotFoundException();
@@ -39,7 +62,7 @@ public class UserController {
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	public List<User> getUsers() {
-		return userService.getUsers();
+		return userService.retrieveUsers();
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
@@ -67,11 +90,6 @@ public class UserController {
 
 		userService.updateUserLocation(id, latitude, longitude);
 
-		return new ResponseEntity<String>(HttpStatus.OK);
-	}
-
-	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public ResponseEntity<String> login() {
 		return new ResponseEntity<String>(HttpStatus.OK);
 	}
 }

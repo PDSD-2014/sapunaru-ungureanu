@@ -9,16 +9,41 @@ import java.util.concurrent.atomic.AtomicLong;
 import ro.pub.cs.pdsd.buddystalker.server.model.User;
 
 public class UserServiceImpl implements UserService {
+	private static UserServiceImpl INSTANCE;
+
 	private Map<Long, User> users = new ConcurrentHashMap<>();
 	private AtomicLong sequence = new AtomicLong();
 
+	private UserServiceImpl() {
+		// singleton
+	}
+
+	public static UserServiceImpl getInstance() {
+		if (INSTANCE == null) {
+			return new UserServiceImpl();
+		}
+
+		return INSTANCE;
+	}
+
 	@Override
-	public User getUser(long id) {
+	public User retrieveUser(long id) {
 		return users.get(id);
 	}
 
 	@Override
-	public List<User> getUsers() {
+	public User retrieveUserByUsername(String username) {
+		for (User user : users.values()) {
+			if (user.getUsername().equals(username)) {
+				return user;
+			}
+		}
+
+		return null;
+	}
+
+	@Override
+	public List<User> retrieveUsers() {
 		return new ArrayList<User>(users.values());
 	}
 
@@ -33,6 +58,23 @@ public class UserServiceImpl implements UserService {
 		User user = users.get(id);
 		user.setLatitude(latitude);
 		user.setLongitude(longitude);
+	}
+
+	@Override
+	public boolean validateCredentials(String username, String password) {
+		for (User user : users.values()) {
+			if (user.getUsername().equals(username)) {
+				if (user.getPassword().equals(password)) {
+					// the user signed in, mark him as online
+					user.setOnline(true);
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	@Override

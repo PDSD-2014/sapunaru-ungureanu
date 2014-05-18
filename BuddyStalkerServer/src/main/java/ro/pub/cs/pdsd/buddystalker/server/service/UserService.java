@@ -5,9 +5,11 @@ import java.util.List;
 import ro.pub.cs.pdsd.buddystalker.server.model.User;
 
 public interface UserService {
-	User getUser(long id);
+	User retrieveUser(long id);
 
-	List<User> getUsers();
+	User retrieveUserByUsername(String username);
+
+	List<User> retrieveUsers();
 
 	void createUser(User user);
 
@@ -16,4 +18,7 @@ public interface UserService {
 	boolean userExists(long id);
 
 	boolean usernameExists(String username);
+
+	boolean validateCredentials(String username, String password);
+
 }
