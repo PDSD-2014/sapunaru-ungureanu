@@ -1,4 +1,4 @@
-package ro.pub.cs.pdsd.buddystalker.ui;
+package ro.pub.cs.pdsd.buddystalker.worker;
 
 import java.io.IOException;
 
@@ -9,6 +9,7 @@ import ro.pub.cs.pdsd.buddystalker.location.LocationHelper;
 import android.location.Location;
 
 public class UpdateLocationThread extends Thread {
+	private boolean mAlive = true;
 	private long mUserId;
 	private LocationHelper mLocationHelper;
 
@@ -20,7 +21,7 @@ public class UpdateLocationThread extends Thread {
 	@Override
 	public void run() {
 		UserClient userClient = UserClient.getInstance();
-		while (true) {
+		while (mAlive) {
 			try {
 				Location location = mLocationHelper.getLastKnownLocation();
 				if (location != null) {
@@ -33,11 +34,16 @@ public class UpdateLocationThread extends Thread {
 				throw new RuntimeException(e);
 			}
 
+			// perform the request after some sleeping
 			try {
 				Thread.sleep(3000);
 			} catch (InterruptedException e) {
 				return;
 			}
 		}
+	}
+
+	public void setAlive(boolean alive) {
+		mAlive = alive;
 	}
 }

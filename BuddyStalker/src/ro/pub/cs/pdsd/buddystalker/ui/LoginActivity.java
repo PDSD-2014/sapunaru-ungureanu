@@ -2,7 +2,6 @@ package ro.pub.cs.pdsd.buddystalker.ui;
 
 import java.io.IOException;
 
-import org.apache.http.HttpException;
 import org.apache.http.client.ClientProtocolException;
 
 import ro.pub.cs.pdsd.buddystalker.R;
@@ -23,6 +22,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Activity which displays a login screen to the user, offering registration as
@@ -196,6 +196,8 @@ public class LoginActivity extends Activity {
 	 * the user.
 	 */
 	private class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+		private String failureMessage;
+
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			UserClient userClient = UserClient.getInstance();
@@ -204,10 +206,10 @@ public class LoginActivity extends Activity {
 				// send the hash of the password
 				return userClient.validateCredentials(mUsername, PasswordUtils.sha256Hash(mPassword));
 			} catch (ClientProtocolException e) {
+				failureMessage = getString(R.string.error_communication_failure);
 				return false;
 			} catch (IOException e) {
-				return false;
-			} catch (HttpException e) {
+				failureMessage = getString(R.string.error_communication_failure);
 				return false;
 			}
 		}
@@ -223,8 +225,12 @@ public class LoginActivity extends Activity {
 				intent.putExtra(ExtraParameters.USERNAME, mUsername);
 				startActivity(intent);
 			} else {
-				mUsernameView.setError(getString(R.string.error_incorrect_combination));
-				mUsernameView.requestFocus();
+				if (failureMessage != null) {
+					Toast.makeText(LoginActivity.this, failureMessage, Toast.LENGTH_LONG).show();
+				} else {
+					mUsernameView.setError(getString(R.string.error_incorrect_combination));
+					mUsernameView.requestFocus();
+				}
 			}
 		}
 

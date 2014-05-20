@@ -156,8 +156,6 @@ public class RegisterUserActivity extends Activity {
 			} catch (IOException e) {
 				failureMessage = getString(R.string.create_failed_connection_problems);
 				return false;
-			} finally {
-				userClient.close();
 			}
 
 			return successful;

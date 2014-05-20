@@ -11,5 +11,7 @@
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_combination">Username and password combination is invalid</string>
     <string name="error_field_required">This field is required</string>
+    <string name="error_communication_failure">Could not communicate with the server,
+        please check your Internet connection</string>
 
 </resources>

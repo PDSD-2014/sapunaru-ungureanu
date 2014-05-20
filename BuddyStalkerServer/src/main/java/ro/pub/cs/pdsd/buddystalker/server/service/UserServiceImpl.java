@@ -1,8 +1,12 @@
 package ro.pub.cs.pdsd.buddystalker.server.service;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -13,6 +17,11 @@ public class UserServiceImpl implements UserService {
 
 	private Map<Long, User> users = new ConcurrentHashMap<>();
 	private AtomicLong sequence = new AtomicLong();
+
+	private static final DateFormat DF = new SimpleDateFormat("E HH:mm, MMM dd");
+	static {
+		DF.setTimeZone(TimeZone.getTimeZone("GMT+3"));
+	}
 
 	private UserServiceImpl() {
 		// singleton
@@ -58,6 +67,8 @@ public class UserServiceImpl implements UserService {
 		User user = users.get(id);
 		user.setLatitude(latitude);
 		user.setLongitude(longitude);
+		// the user updated his location, update his "lastSeenAt" date
+		user.setLastSeenAt(DF.format(new Date()));
 	}
 
 	@Override
@@ -65,8 +76,8 @@ public class UserServiceImpl implements UserService {
 		for (User user : users.values()) {
 			if (user.getUsername().equals(username)) {
 				if (user.getPassword().equals(password)) {
-					// the user signed in, mark him as online
-					user.setOnline(true);
+					// the user signed in, update his "lastSeenAt" date
+					user.setLastSeenAt(DF.format(new Date()));
 					return true;
 				} else {
 					return false;

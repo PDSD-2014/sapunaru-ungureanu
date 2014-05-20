@@ -1,9 +1,10 @@
-package ro.pub.cs.pdsd.buddystalker.http.client;
+package ro.pub.cs.pdsd.buddystalker.worker;
 
 import java.io.IOException;
 
 import org.apache.http.client.ClientProtocolException;
 
+import ro.pub.cs.pdsd.buddystalker.http.client.UserClient;
 import ro.pub.cs.pdsd.buddystalker.model.User;
 import android.os.AsyncTask;
 

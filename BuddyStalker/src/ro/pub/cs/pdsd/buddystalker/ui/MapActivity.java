@@ -1,13 +1,16 @@
 package ro.pub.cs.pdsd.buddystalker.ui;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ro.pub.cs.pdsd.buddystalker.R;
-import ro.pub.cs.pdsd.buddystalker.http.client.GetUserAsyncTask;
-import ro.pub.cs.pdsd.buddystalker.http.client.UpdatesPollingAsyncTask;
 import ro.pub.cs.pdsd.buddystalker.location.LocationHelper;
 import ro.pub.cs.pdsd.buddystalker.model.User;
+import ro.pub.cs.pdsd.buddystalker.worker.GetUserAsyncTask;
+import ro.pub.cs.pdsd.buddystalker.worker.UpdateLocationThread;
+import ro.pub.cs.pdsd.buddystalker.worker.UpdatesPollingAsyncTask;
 import android.app.Activity;
 import android.location.Location;
 import android.os.Bundle;
@@ -30,11 +33,12 @@ public class MapActivity extends Activity {
 	private static final LatLng DEFAULT_LAT_LNG = new LatLng(0.0f, 0.0f);
 
 	private List<Marker> markerList = new ArrayList<Marker>();
+	private Map<String, Marker> markerCache = new HashMap<String, Marker>();
 
 	private GoogleMap mGoogleMap;
 	private LocationHelper mLocationHelper;
 	private UpdatesPollingAsyncTask mUpdatesPollingTask;
-	private Thread updateThread;
+	private UpdateLocationThread mUpdateThread;
 
 	private User currentUser;
 
@@ -55,8 +59,10 @@ public class MapActivity extends Activity {
 				Toast.makeText(MapActivity.this, "Logged in as " + currentUser.getUsername(),
 						Toast.LENGTH_SHORT).show();
 
-				updateThread = new UpdateLocationThread(currentUser.getId(), mLocationHelper);
-				updateThread.start();
+				if (mUpdateThread == null) {
+					mUpdateThread = new UpdateLocationThread(currentUser.getId(), mLocationHelper);
+					mUpdateThread.start();
+				}
 			}
 		}.execute(username);
 
@@ -72,11 +78,21 @@ public class MapActivity extends Activity {
 	@Override
 	public void onPause() {
 		super.onPause();
-		mUpdatesPollingTask.cancel(true);
-		mUpdatesPollingTask = null;
 
-		updateThread.interrupt();
-		updateThread = null;
+		if (mUpdatesPollingTask != null) {
+			mUpdatesPollingTask.cancel(true);
+			mUpdatesPollingTask = null;
+		}
+		if (mUpdateThread != null) {
+			try {
+				mUpdateThread.setAlive(false);
+				mUpdateThread.join();
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+			mUpdateThread.interrupt();
+			mUpdateThread = null;
+		}
 	}
 
 	@Override
@@ -95,18 +111,30 @@ public class MapActivity extends Activity {
 			mUpdatesPollingTask.execute();
 		}
 
-		if (updateThread == null && currentUser != null) {
-			updateThread = new UpdateLocationThread(currentUser.getId(), mLocationHelper);
-			updateThread.start();
+		if (mUpdateThread == null && currentUser != null) {
+			mUpdateThread = new UpdateLocationThread(currentUser.getId(), mLocationHelper);
+			mUpdateThread.start();
 		}
 	}
 
 	@Override
-	public void onDestroy() {
-		super.onDestroy();
+	public void onStop() {
+		super.onStop();
 
-		mUpdatesPollingTask.cancel(true);
-		mUpdatesPollingTask = null;
+		if (mUpdatesPollingTask != null) {
+			mUpdatesPollingTask.cancel(true);
+			mUpdatesPollingTask = null;
+		}
+		if (mUpdateThread != null) {
+			try {
+				mUpdateThread.setAlive(false);
+				mUpdateThread.join();
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+			mUpdateThread.interrupt();
+			mUpdateThread = null;
+		}
 	}
 
 	@Override
@@ -170,22 +198,27 @@ public class MapActivity extends Activity {
 
 	private void addUserMarkers(List<User> users) {
 		if (users != null) {
-			for (Marker marker : markerList) {
-				marker.remove();
-			}
-
-			markerList.clear();
+			Marker marker;
 
 			for (User user : users) {
 				if (user.getUsername().equals(currentUser.getUsername())) {
 					continue;
 				}
-				MarkerOptions markerOptions = new MarkerOptions();
-				markerOptions.position(new LatLng(user.getLatitude(), user.getLongitude()));
-				markerOptions.title(user.getFirstName() + " " + user.getLastName());
-				markerOptions.snippet("Status: " + user.getStatus());
 
-				markerList.add(mGoogleMap.addMarker(markerOptions));
+				if (!markerCache.containsKey(user.getUsername())) {
+					MarkerOptions markerOptions = new MarkerOptions();
+					markerOptions.position(new LatLng(user.getLatitude(), user.getLongitude()));
+					markerOptions.title(user.getFirstName() + " " + user.getLastName());
+					markerOptions.snippet("Status: " + user.getStatus() + " (" + user.getLastSeenAt() + ")");
+
+					marker = mGoogleMap.addMarker(markerOptions);
+					markerCache.put(user.getUsername(), marker);
+				} else {
+					marker = markerCache.get(user.getUsername());
+					marker.setPosition(new LatLng(user.getLatitude(), user.getLongitude()));
+					marker.setTitle(user.getFirstName() + " " + user.getLastName());
+					marker.setSnippet("Status: " + user.getStatus() + " (" + user.getLastSeenAt() + ")");
+				}
 			}
 		}
 	}

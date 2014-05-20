@@ -1,5 +1,6 @@
 package ro.pub.cs.pdsd.buddystalker.model;
 
+
 public class User {
 	private long id;
 	private String username;
@@ -9,7 +10,7 @@ public class User {
 	private float latitude;
 	private float longitude;
 	private String status;
-	private boolean online;
+	private String lastSeenAt;
 
 	public long getId() {
 		return id;
@@ -75,12 +76,12 @@ public class User {
 		this.status = status;
 	}
 
-	public boolean isOnline() {
-		return online;
+	public String getLastSeenAt() {
+		return lastSeenAt;
 	}
 
-	public void setOnline(boolean online) {
-		this.online = online;
+	public void setLastSeenAt(String lastSeenAt) {
+		this.lastSeenAt = lastSeenAt;
 	}
 
 	@Override

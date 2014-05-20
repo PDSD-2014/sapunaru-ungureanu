@@ -5,7 +5,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
@@ -22,7 +21,6 @@ import ro.pub.cs.pdsd.buddystalker.model.User;
 import android.net.Uri;
 import android.net.http.AndroidHttpClient;
 import android.os.Build;
-import android.util.Base64;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -117,7 +115,7 @@ public class UserClient {
 	}
 
 	public boolean validateCredentials(String username, String password)
-			throws ClientProtocolException, IOException, HttpException {
+			throws ClientProtocolException, IOException {
 		Uri.Builder uriBuilder = Uri.parse(RestApiPaths.LOGIN_PATH).buildUpon();
 		uriBuilder.appendQueryParameter(RestApiParameters.USERNAME_PARAM, username);
 		uriBuilder.appendQueryParameter(RestApiParameters.SECRET_PARAM, password);
@@ -132,17 +130,19 @@ public class UserClient {
 		return (statusLine.getStatusCode() == HttpStatus.SC_OK);
 	}
 
+	public void logout(String username) throws ClientProtocolException, IOException {
+		Uri.Builder uriBuilder = Uri.parse(RestApiPaths.LOGOUT_PATH).buildUpon();
+		uriBuilder.appendQueryParameter(RestApiParameters.USERNAME_PARAM, username);
+
+		HttpUriRequest request = new HttpPost(uriBuilder.build().toString());
+
+		HttpResponse response = httpClient.execute(request);
+
+		StatusLine statusLine = response.getStatusLine();
+		Log.d(TAG, "logout response status line: " + statusLine);
+	}
+
 	public void close() {
 		((AndroidHttpClient) httpClient).close();
-	}
-
-	protected void addAuthorizationHeader(HttpUriRequest request, String username, String password) {
-		request.addHeader("Authorization", encodeCredentials(username, password));
-	}
-
-	private String encodeCredentials(String username, String password) {
-		String source = username + ":" + password;
-		return "Basic "
-				+ Base64.encodeToString(source.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
 	}
 }

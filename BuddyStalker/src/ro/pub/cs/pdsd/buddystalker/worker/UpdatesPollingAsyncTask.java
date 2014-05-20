@@ -1,10 +1,11 @@
-package ro.pub.cs.pdsd.buddystalker.http.client;
+package ro.pub.cs.pdsd.buddystalker.worker;
 
 import java.io.IOException;
 import java.util.List;
 
 import org.apache.http.client.ClientProtocolException;
 
+import ro.pub.cs.pdsd.buddystalker.http.client.UserClient;
 import ro.pub.cs.pdsd.buddystalker.model.User;
 import android.os.AsyncTask;
 
@@ -25,10 +26,11 @@ public class UpdatesPollingAsyncTask extends AsyncTask<Void, List<User>, Void> {
 				throw new RuntimeException(e);
 			}
 
+			// perform the request after some sleeping
 			try {
 				Thread.sleep(3000);
 			} catch (InterruptedException e) {
-				throw new RuntimeException(e);
+				return null;
 			}
 		}
 
