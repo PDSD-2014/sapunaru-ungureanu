@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:minHeight="50dp"
+    android:minWidth="200dp" >
+
+    <TextView
+        android:id="@+id/title_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:textColor="@android:color/black"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/status_label_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/status_label"
+        android:layout_below="@id/title_tv"
+        android:textSize="13sp" />
+    
+    <TextView
+        android:id="@+id/status_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/status_label_tv"
+        android:layout_toRightOf="@id/status_label_tv"
+        android:textSize="13sp" />
+    
+    <TextView
+        android:id="@+id/seen_at_label_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/seen_at_label"
+        android:layout_below="@id/status_label_tv"
+        android:textSize="13sp" />
+    
+    <TextView
+        android:id="@+id/seen_at_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/seen_at_label_tv"
+        android:layout_toRightOf="@id/seen_at_label_tv"
+        android:textSize="13sp" />
+
+</RelativeLayout>

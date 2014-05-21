@@ -1,6 +1,5 @@
 package ro.pub.cs.pdsd.buddystalker.ui;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +20,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -32,7 +32,6 @@ public class MapActivity extends Activity {
 
 	private static final LatLng DEFAULT_LAT_LNG = new LatLng(0.0f, 0.0f);
 
-	private List<Marker> markerList = new ArrayList<Marker>();
 	private Map<String, Marker> markerCache = new HashMap<String, Marker>();
 
 	private GoogleMap mGoogleMap;
@@ -161,7 +160,7 @@ public class MapActivity extends Activity {
 		if (mGoogleMap == null) {
 			mGoogleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
 
-			//mGoogleMap.setInfoWindowAdapter(adapter);
+			mGoogleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(this));
 		}
 
 		if (mGoogleMap != null) {
@@ -209,7 +208,10 @@ public class MapActivity extends Activity {
 					MarkerOptions markerOptions = new MarkerOptions();
 					markerOptions.position(new LatLng(user.getLatitude(), user.getLongitude()));
 					markerOptions.title(user.getFirstName() + " " + user.getLastName());
-					markerOptions.snippet("Status: " + user.getStatus() + " (" + user.getLastSeenAt() + ")");
+					markerOptions.snippet(user.getStatus() + CustomInfoWindowAdapter.SNIPPET_DELIMITER
+							+ user.getLastSeenAt());
+					markerOptions.icon(BitmapDescriptorFactory.defaultMarker(
+							BitmapDescriptorFactory.HUE_BLUE));
 
 					marker = mGoogleMap.addMarker(markerOptions);
 					markerCache.put(user.getUsername(), marker);
@@ -217,7 +219,8 @@ public class MapActivity extends Activity {
 					marker = markerCache.get(user.getUsername());
 					marker.setPosition(new LatLng(user.getLatitude(), user.getLongitude()));
 					marker.setTitle(user.getFirstName() + " " + user.getLastName());
-					marker.setSnippet("Status: " + user.getStatus() + " (" + user.getLastSeenAt() + ")");
+					marker.setSnippet(user.getStatus() + CustomInfoWindowAdapter.SNIPPET_DELIMITER
+							+ user.getLastSeenAt());
 				}
 			}
 		}
