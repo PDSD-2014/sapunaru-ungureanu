@@ -66,8 +66,7 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/{id}/status", method = RequestMethod.PUT)
-	public ResponseEntity<String> updateStatus(@PathVariable Long id,
-			@RequestParam("status") String status) {
+	public ResponseEntity<String> updateStatus(@PathVariable Long id, @RequestBody String status) {
 		if (!userService.userExists(id)) {
 			throw new UserNotFoundException();
 		}
