@@ -93,6 +93,7 @@ public class MapActivity extends Activity {
 	public void onPause() {
 		super.onPause();
 
+		// stop all the background tasks
 		if (mUpdatesPollingTask != null) {
 			mUpdatesPollingTask.cancel(true);
 			mUpdatesPollingTask = null;
@@ -114,6 +115,7 @@ public class MapActivity extends Activity {
 
 		setUpMapIfNeeded();
 
+		// restart the background tasks
 		if (mUpdatesPollingTask == null) {
 			mUpdatesPollingTask = new UpdatesPollingAsyncTask() {
 				@Override
@@ -134,6 +136,7 @@ public class MapActivity extends Activity {
 	public void onStop() {
 		super.onStop();
 
+		// stop all the background tasks
 		if (mUpdatesPollingTask != null) {
 			mUpdatesPollingTask.cancel(true);
 			mUpdatesPollingTask = null;
@@ -177,6 +180,7 @@ public class MapActivity extends Activity {
 			alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int whichButton) {
+					// start the thread which will make the update status request
 					new UpdateStatusThread(mCurrentUser.getId(), input.getText().toString()).start();
 				}
 			});
@@ -184,7 +188,7 @@ public class MapActivity extends Activity {
 			alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int whichButton) {
-					// Canceled.
+					// do nothing
 				}
 			});
 
@@ -207,6 +211,8 @@ public class MapActivity extends Activity {
 			Location location = null;
 			CameraPosition cameraPosition = null;
 
+			// if the location service is not available, display a message and position the camera
+			// centered on a default location (0, 0)
 			if (!mLocationHelper.isLocationServiceEnabled()) {
 				Toast.makeText(this, getString(R.string.toast_location_disabled),
 						Toast.LENGTH_LONG).show();
@@ -217,6 +223,7 @@ public class MapActivity extends Activity {
 			} else {
 				mGoogleMap.setMyLocationEnabled(true);
 
+				// get the last known location and center the view on it
 				location = mLocationHelper.getLastKnownLocation();
 				if (location != null) {
 					cameraPosition = new CameraPosition.Builder()
@@ -239,11 +246,13 @@ public class MapActivity extends Activity {
 		if (users != null) {
 			Marker marker;
 
+			// add markers for every user
 			for (User user : users) {
 				if (user.getUsername().equals(mCurrentUser.getUsername())) {
 					continue;
 				}
 
+				// look in the cache to see if the user already has a marker
 				if (!markerCache.containsKey(user.getUsername())) {
 					MarkerOptions markerOptions = new MarkerOptions();
 					markerOptions.position(new LatLng(user.getLatitude(), user.getLongitude()));
@@ -256,7 +265,9 @@ public class MapActivity extends Activity {
 					marker = mGoogleMap.addMarker(markerOptions);
 					markerCache.put(user.getUsername(), marker);
 				} else {
+					// if the user already has a marker associated, reuse it
 					marker = markerCache.get(user.getUsername());
+
 					marker.setPosition(new LatLng(user.getLatitude(), user.getLongitude()));
 					marker.setTitle(user.getFirstName() + " " + user.getLastName());
 					marker.setSnippet(user.getStatus() + CustomInfoWindowAdapter.SNIPPET_DELIMITER

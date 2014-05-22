@@ -8,6 +8,9 @@ import ro.pub.cs.pdsd.buddystalker.http.client.UserClient;
 import ro.pub.cs.pdsd.buddystalker.model.User;
 import android.os.AsyncTask;
 
+/**
+ * Retrieves a user from the server.
+ */
 public class GetUserAsyncTask extends AsyncTask<String, Void, User> {
 
 	@Override

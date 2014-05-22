@@ -6,6 +6,9 @@ import org.apache.http.client.ClientProtocolException;
 
 import ro.pub.cs.pdsd.buddystalker.http.client.UserClient;
 
+/**
+ * Makes a single request to the server to update the current user's status.
+ */
 public class UpdateStatusThread extends Thread {
 	private String mStatus;
 	private long mUserId;

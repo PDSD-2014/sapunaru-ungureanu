@@ -10,6 +10,10 @@ import android.widget.TextView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 
+/**
+ * This class provides an implementation for {@link GoogleMap.InfoWindowAdapter}, the UI component
+ * which is displayed when clicking on a map marker.
+ */
 public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 	public static final String SNIPPET_DELIMITER = "!__!";
 

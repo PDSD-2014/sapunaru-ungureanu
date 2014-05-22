@@ -25,6 +25,9 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
+/**
+ * This class is responsible for making HTTP requests to the server.
+ */
 public class UserClient {
 	private static UserClient INSTANCE = null;
 
@@ -47,6 +50,14 @@ public class UserClient {
 		return INSTANCE;
 	}
 
+	/**
+	 * Retrieves a user by it's id.
+	 *
+	 * @param id
+	 * @return a {@link User} object
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
 	public User getUser(long id) throws ClientProtocolException, IOException {
 		HttpUriRequest request = new HttpGet(RestApiPaths.USERS_PATH + "/" + id);
 		HttpResponse response = httpClient.execute(request);
@@ -57,6 +68,14 @@ public class UserClient {
 		return user;
 	}
 
+	/**
+	 * Retrieves a user by it's user name.
+	 *
+	 * @param username
+	 * @return a {@link User} object
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
 	public User getUserByUsername(String username) throws ClientProtocolException, IOException {
 		Uri.Builder uriBuilder = Uri.parse(RestApiPaths.USER_SEARCH_PATH).buildUpon();
 		uriBuilder.appendQueryParameter(RestApiParameters.USERNAME_PARAM, username);
@@ -71,6 +90,13 @@ public class UserClient {
 		return user;
 	}
 
+	/**
+	 * Retrieves all the users.
+	 *
+	 * @return a {@link List} of {@link User} objects
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
 	public List<User> getUsers() throws ClientProtocolException, IOException {
 		HttpUriRequest request = new HttpGet(RestApiPaths.USERS_PATH);
 		HttpResponse response = httpClient.execute(request);
@@ -83,6 +109,15 @@ public class UserClient {
 		return Arrays.asList(users);
 	}
 
+	/**
+	 * Updates the user's status.
+	 *
+	 * @param userId
+	 * @param status
+	 * @return {@code true} if the request succeeded, {@code false} otherwise
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
 	public boolean updateStatus(long userId, String status) throws ClientProtocolException,
 			IOException {
 		Uri.Builder uriBuilder = Uri.parse(RestApiPaths.USERS_PATH).buildUpon();
@@ -100,7 +135,17 @@ public class UserClient {
 		return (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK);
 	}
 
-	public boolean uploadLocation(long userId, double latitude, double longitude)
+	/**
+	 * Updates the user's location.
+	 *
+	 * @param userId
+	 * @param latitude
+	 * @param longitude
+	 * @return {@code true} if the request succeeded, {@code false} otherwise
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
+	public boolean updateLocation(long userId, double latitude, double longitude)
 			throws ClientProtocolException, IOException {
 		Uri.Builder uriBuilder = Uri.parse(RestApiPaths.USERS_PATH).buildUpon();
 		uriBuilder.appendPath(String.valueOf(userId));
@@ -117,6 +162,15 @@ public class UserClient {
 		return (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK);
 	}
 
+	/**
+	 * Creates a new user.
+	 *
+	 * @param user
+	 * @return {@code true} if the request succeeded, {@code false} otherwise
+	 * @throws ClientProtocolException
+	 * @throws UnsupportedEncodingException
+	 * @throws IOException
+	 */
 	public boolean createUser(User user) throws ClientProtocolException, UnsupportedEncodingException,
 			IOException {
 		HttpPost request = new HttpPost(RestApiPaths.USERS_PATH);
@@ -131,6 +185,15 @@ public class UserClient {
 		return (statusLine.getStatusCode() == HttpStatus.SC_CREATED);
 	}
 
+	/**
+	 * Simulates a log in by validating the credentials provided by the user.
+	 *
+	 * @param username
+	 * @param password
+	 * @return {@code true} if the request succeeded, {@code false} otherwise
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
 	public boolean validateCredentials(String username, String password)
 			throws ClientProtocolException, IOException {
 		Uri.Builder uriBuilder = Uri.parse(RestApiPaths.LOGIN_PATH).buildUpon();
@@ -145,18 +208,6 @@ public class UserClient {
 		Log.d(TAG, "login response status line: " + statusLine);
 
 		return (statusLine.getStatusCode() == HttpStatus.SC_OK);
-	}
-
-	public void logout(String username) throws ClientProtocolException, IOException {
-		Uri.Builder uriBuilder = Uri.parse(RestApiPaths.LOGOUT_PATH).buildUpon();
-		uriBuilder.appendQueryParameter(RestApiParameters.USERNAME_PARAM, username);
-
-		HttpUriRequest request = new HttpPost(uriBuilder.build().toString());
-
-		HttpResponse response = httpClient.execute(request);
-
-		StatusLine statusLine = response.getStatusLine();
-		Log.d(TAG, "logout response status line: " + statusLine);
 	}
 
 	public void close() {

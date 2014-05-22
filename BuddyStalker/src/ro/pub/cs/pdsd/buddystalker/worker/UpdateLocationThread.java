@@ -8,6 +8,10 @@ import ro.pub.cs.pdsd.buddystalker.http.client.UserClient;
 import ro.pub.cs.pdsd.buddystalker.location.LocationHelper;
 import android.location.Location;
 
+/**
+ * Makes a request to the server every {@value #UPDATE_INTERVAL_MILLIS} milliseconds, updating the
+ * current user location data.
+ */
 public class UpdateLocationThread extends Thread {
 	private boolean mAlive = true;
 	private long mUserId;
@@ -27,7 +31,7 @@ public class UpdateLocationThread extends Thread {
 			try {
 				Location location = mLocationHelper.getLastKnownLocation();
 				if (location != null) {
-					userClient.uploadLocation(mUserId, location.getLatitude(),
+					userClient.updateLocation(mUserId, location.getLatitude(),
 							location.getLongitude());
 				}
 			} catch (ClientProtocolException e) {
