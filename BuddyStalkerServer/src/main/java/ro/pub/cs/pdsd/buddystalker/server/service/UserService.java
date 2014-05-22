@@ -20,4 +20,6 @@ public interface UserService {
 	boolean usernameExists(String username);
 
 	boolean validateCredentials(String username, String password);
+
+	void updateStatus(Long id, String status);
 }

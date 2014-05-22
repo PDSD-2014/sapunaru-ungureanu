@@ -65,6 +65,22 @@ public class UserController {
 		return userService.retrieveUsers();
 	}
 
+	@RequestMapping(value = "/{id}/status", method = RequestMethod.PUT)
+	public ResponseEntity<String> updateStatus(@PathVariable Long id,
+			@RequestParam("status") String status) {
+		if (!userService.userExists(id)) {
+			throw new UserNotFoundException();
+		}
+
+		if (status == null) {
+			throw new BadRequestException();
+		}
+
+		userService.updateStatus(id, status);
+
+		return new ResponseEntity<String>(HttpStatus.OK);
+	}
+
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<String> createUser(@RequestBody User user) {
 		if (!userService.usernameExists(user.getUsername())) {

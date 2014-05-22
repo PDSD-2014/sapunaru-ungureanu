@@ -15,6 +15,7 @@ import ro.pub.cs.pdsd.buddystalker.server.model.User;
 public class UserServiceImpl implements UserService {
 	private static UserServiceImpl INSTANCE;
 
+	// in-memory database, the key is the user's id
 	private Map<Long, User> users = new ConcurrentHashMap<>();
 	private AtomicLong sequence = new AtomicLong();
 
@@ -63,6 +64,12 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public void updateStatus(Long id, String status) {
+		User user = users.get(id);
+		user.setStatus(status);
+	}
+
+	@Override
 	public void updateUserLocation(long id, float latitude, float longitude) {
 		User user = users.get(id);
 		user.setLatitude(latitude);
@@ -105,6 +112,6 @@ public class UserServiceImpl implements UserService {
 	}
 
 	private long getNextSequenceId() {
-		return sequence.getAndIncrement();
+		return sequence.incrementAndGet();
 	}
 }
