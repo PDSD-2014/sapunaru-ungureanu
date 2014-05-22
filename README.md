@@ -3,7 +3,7 @@ Buddy Stalker
 
 Server
 -----
-We implemented an HTTP server using Spring MVC technologies. 
+We implemented an HTTP server using Spring MVC technologies. It uses an in-memory database, represented by a ConcurrentHashMap which holds all the app users.
 
 Client
 ------
