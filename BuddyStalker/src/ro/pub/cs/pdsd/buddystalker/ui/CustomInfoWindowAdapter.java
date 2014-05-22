@@ -28,10 +28,12 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 		String[] tokens = snippet.split(Pattern.quote(SNIPPET_DELIMITER));
 
 		TextView statusTv = (TextView) mInfoWindowView.findViewById(R.id.status_tv);
-		statusTv.setText(tokens[0]);
+		// add a space character only for design
+		statusTv.setText(" " + tokens[0]);
 
 		TextView seenAtTv = (TextView) mInfoWindowView.findViewById(R.id.seen_at_tv);
-		seenAtTv.setText(tokens[1]);
+		// add a space character only for design
+		seenAtTv.setText(" " + tokens[1]);
 
 		return mInfoWindowView;
 	}

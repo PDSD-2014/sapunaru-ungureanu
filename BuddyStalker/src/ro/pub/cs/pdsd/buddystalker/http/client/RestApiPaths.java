@@ -13,4 +13,5 @@ public class RestApiPaths {
 	public static final String USER_SEARCH_PATH = USERS_PATH + "/search";
 
 	public static final String USER_LOCATION_SEGMENT = "location";
+	public static final String USER_STATUS_SEGMENT = "status";
 }

@@ -13,6 +13,8 @@ public class UpdateLocationThread extends Thread {
 	private long mUserId;
 	private LocationHelper mLocationHelper;
 
+	private static final long UPDATE_INTERVAL_MILLIS = 3000L;
+
 	public UpdateLocationThread(long userId, LocationHelper locationHelper) {
 		mLocationHelper = locationHelper;
 		mUserId = userId;
@@ -36,7 +38,7 @@ public class UpdateLocationThread extends Thread {
 
 			// perform the request after some sleeping
 			try {
-				Thread.sleep(3000);
+				Thread.sleep(UPDATE_INTERVAL_MILLIS);
 			} catch (InterruptedException e) {
 				return;
 			}

@@ -4,8 +4,8 @@
     tools:context="ro.pub.cs.pdsd.buddystalker.RegisterUserActivity" >
 
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_update_status"
         android:orderInCategory="100"
-        android:title="@string/action_settings" />
+        android:title="@string/action_update_status" />
 
 </menu>

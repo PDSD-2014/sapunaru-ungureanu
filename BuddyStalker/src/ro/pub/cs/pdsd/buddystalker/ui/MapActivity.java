@@ -9,12 +9,17 @@ import ro.pub.cs.pdsd.buddystalker.location.LocationHelper;
 import ro.pub.cs.pdsd.buddystalker.model.User;
 import ro.pub.cs.pdsd.buddystalker.worker.GetUserAsyncTask;
 import ro.pub.cs.pdsd.buddystalker.worker.UpdateLocationThread;
+import ro.pub.cs.pdsd.buddystalker.worker.UpdateStatusThread;
 import ro.pub.cs.pdsd.buddystalker.worker.UpdatesPollingAsyncTask;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.location.Location;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -39,7 +44,7 @@ public class MapActivity extends Activity {
 	private UpdatesPollingAsyncTask mUpdatesPollingTask;
 	private UpdateLocationThread mUpdateThread;
 
-	private User currentUser;
+	private User mCurrentUser;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,24 +52,34 @@ public class MapActivity extends Activity {
 		setContentView(R.layout.activity_map);
 
 		mLocationHelper = new LocationHelper(this);
+
+		// set up GoogleMap
 		setUpMapIfNeeded();
 
+		// get the login user name
 		String username = getIntent().getExtras().getString(ExtraParameters.USERNAME);
 
+		// retrieve the user by user name
 		new GetUserAsyncTask() {
 			@Override
 			protected void onPostExecute(User user) {
-				currentUser = user;
-				Toast.makeText(MapActivity.this, "Logged in as " + currentUser.getUsername(),
-						Toast.LENGTH_SHORT).show();
+				mCurrentUser = user;
+				Toast.makeText(MapActivity.this, MapActivity.this.getString(R.string.login_message)
+						+ " " + mCurrentUser.getUsername(), Toast.LENGTH_LONG).show();
 
+				// modify the title of this activity
+				setTitle(mCurrentUser.getFirstName() + " " + mCurrentUser.getLastName());
+
+				// start the background thread which updates the location periodically
 				if (mUpdateThread == null) {
-					mUpdateThread = new UpdateLocationThread(currentUser.getId(), mLocationHelper);
+					mUpdateThread = new UpdateLocationThread(mCurrentUser.getId(), mLocationHelper);
 					mUpdateThread.start();
 				}
 			}
 		}.execute(username);
 
+		// start the background task which retrieves all the users from the server and updates
+		// the UI information
 		mUpdatesPollingTask = new UpdatesPollingAsyncTask() {
 			@Override
 			public void onProgressUpdate(List<User>... users) {
@@ -89,7 +104,6 @@ public class MapActivity extends Activity {
 			} catch (InterruptedException e) {
 				throw new RuntimeException(e);
 			}
-			mUpdateThread.interrupt();
 			mUpdateThread = null;
 		}
 	}
@@ -110,8 +124,8 @@ public class MapActivity extends Activity {
 			mUpdatesPollingTask.execute();
 		}
 
-		if (mUpdateThread == null && currentUser != null) {
-			mUpdateThread = new UpdateLocationThread(currentUser.getId(), mLocationHelper);
+		if (mUpdateThread == null && mCurrentUser != null) {
+			mUpdateThread = new UpdateLocationThread(mCurrentUser.getId(), mLocationHelper);
 			mUpdateThread.start();
 		}
 	}
@@ -140,6 +154,7 @@ public class MapActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.map, menu);
+
 		return true;
 	}
 
@@ -149,7 +164,32 @@ public class MapActivity extends Activity {
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		if (id == R.id.action_settings) {
+		if (id == R.id.action_update_status) {
+			AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+			alert.setTitle(R.string.status_dialog_title);
+
+			// add an EditText view which will hold the user input
+			final EditText input = new EditText(this);
+			input.setInputType(InputType.TYPE_CLASS_TEXT);
+			alert.setView(input);
+
+			alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int whichButton) {
+					new UpdateStatusThread(mCurrentUser.getId(), input.getText().toString()).start();
+				}
+			});
+
+			alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int whichButton) {
+					// Canceled.
+				}
+			});
+
+			alert.show();
+
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -200,7 +240,7 @@ public class MapActivity extends Activity {
 			Marker marker;
 
 			for (User user : users) {
-				if (user.getUsername().equals(currentUser.getUsername())) {
+				if (user.getUsername().equals(mCurrentUser.getUsername())) {
 					continue;
 				}
 

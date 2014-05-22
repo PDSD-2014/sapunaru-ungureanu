@@ -83,6 +83,23 @@ public class UserClient {
 		return Arrays.asList(users);
 	}
 
+	public boolean updateStatus(long userId, String status) throws ClientProtocolException,
+			IOException {
+		Uri.Builder uriBuilder = Uri.parse(RestApiPaths.USERS_PATH).buildUpon();
+		uriBuilder.appendPath(String.valueOf(userId));
+		uriBuilder.appendPath(RestApiPaths.USER_STATUS_SEGMENT);
+
+		Log.d(TAG, "updateStatus request URI " + uriBuilder.build().toString());
+		HttpPut request = new HttpPut(uriBuilder.build().toString());
+		request.setEntity(new StringEntity(status));
+		request.setHeader("Content-Type", "text/plain");
+		HttpResponse response = httpClient.execute(request);
+
+		Log.d(TAG, "updateStatus status line " + response.getStatusLine());
+
+		return (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK);
+	}
+
 	public boolean uploadLocation(long userId, double latitude, double longitude)
 			throws ClientProtocolException, IOException {
 		Uri.Builder uriBuilder = Uri.parse(RestApiPaths.USERS_PATH).buildUpon();

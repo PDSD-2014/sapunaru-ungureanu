@@ -10,6 +10,7 @@ import ro.pub.cs.pdsd.buddystalker.model.User;
 import android.os.AsyncTask;
 
 public class UpdatesPollingAsyncTask extends AsyncTask<Void, List<User>, Void> {
+	private static final long POLLING_INTERVAL_MILLIS = 3000L;
 
 	@Override
 	protected Void doInBackground(Void... params) {
@@ -28,7 +29,7 @@ public class UpdatesPollingAsyncTask extends AsyncTask<Void, List<User>, Void> {
 
 			// perform the request after some sleeping
 			try {
-				Thread.sleep(3000);
+				Thread.sleep(POLLING_INTERVAL_MILLIS);
 			} catch (InterruptedException e) {
 				return null;
 			}
