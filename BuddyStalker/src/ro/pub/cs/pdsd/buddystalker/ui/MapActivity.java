@@ -171,6 +171,7 @@ public class MapActivity extends Activity {
 			AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
 			alert.setTitle(R.string.status_dialog_title);
+			alert.setMessage("Your current status is: " + mCurrentUser.getStatus());
 
 			// add an EditText view which will hold the user input
 			final EditText input = new EditText(this);
